@@ -7,6 +7,7 @@ from langchain.chains import ChatVectorDBChain
 from langchain.document_loaders import DirectoryLoader
 import os
 import re
+import shutil
 from PIL import Image
 from pdf_loader_tqdm import extract_text, convert_text_to_pdf
 
@@ -50,6 +51,11 @@ if uploaded_file:
     # Create the chroma database
     loader = DirectoryLoader("./data/output_pdf")
     pages = loader.load_and_split()
+    
+    # Check if the directory exists
+    if os.path.exists("./mygpt_DB"):
+        # Use shutil.rmtree to remove the directory and its contents to prevent the app from accessing previous data
+        shutil.rmtree("./mygpt_DB")
 
     embeddings = OpenAIEmbeddings()
     vectordb = Chroma.from_documents(pages, embedding=embeddings, persist_directory="./mygpt_DB")
