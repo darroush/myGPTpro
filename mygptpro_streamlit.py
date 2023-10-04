@@ -57,14 +57,11 @@ if uploaded_file:
         # Use shutil.rmtree to remove the directory and its contents to prevent the app from accessing previous data
         shutil.rmtree("./mygpt_DB")
 
-    embeddings = OpenAIEmbeddings()
-    vectordb = Chroma.from_documents(pages, embedding=embeddings, persist_directory="./mygpt_DB")
-    vectordb.persist()
-
     # Create the embeddings
     def get_bot():
         embeddings = OpenAIEmbeddings()
-        vectordb = Chroma(persist_directory='./mygpt_DB', embedding_function=embeddings)
+        vectordb = Chroma.from_documents(pages, embedding=embeddings, persist_directory="./mygpt_DB")
+        vectordb.persist()
 
         #Prediction part
         bot_qa = ChatVectorDBChain.from_llm(OpenAI(temperature=0.9, model_name="gpt-3.5-turbo"),
@@ -92,6 +89,5 @@ if uploaded_file:
 
         for i in range(len(st.session_state["generated"]) - 1, -1, -1):
             message(st.session_state["past"][i], is_user=True, key=str(i) + "_user")
-            # Display the extracted code block(s) with formatting
             message(st.session_state["generated"][i], key=str(i))
         
